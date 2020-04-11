@@ -34,13 +34,20 @@ board_array1 = [1, 2, 3,
 
 temp_array = board_array[:]
 
+'''# Final array has the final arrangement for the numbers in sequnce then to be compared with 
+board_array to descide if the user win the game 
+'''
 final_array = []
 for num in range(number_rectangles - 1):
     final_array.append(num + 1)
 final_array.append(space_area)
-# print(final_array)
-
+'''# Final array has the final arrangement for the numbers in sequnce then to be compared with 
+board_array to descide if the user win the game 
+'''
+# Font size for numbers on the big board
 number_font = pygame.font.Font(None, 150)
+
+# Font size for numbers on the big board
 small_number_font = pygame.font.Font(None, 70)
 
 # divide screen width by 4 to use the middle area for the board
@@ -126,6 +133,7 @@ big_rectangle_dimension = 150
 rectangle_x = img_wid
 rectangle_y = 150
 rectangle_thickness = 10
+rectangle_thickness_clear = 0
 
 player_name = "Player Name: "
 player_font = pygame.font.Font(None, 50)
@@ -160,30 +168,30 @@ for num in range(number_rectangles):
 # X,Y for each big rectangle
 
 # Location for old and new number to be used in dict locations
-old_new_locations = [(0, 1, 3), (1, 2, 4, 0), (2, 5, 1),
-                     (3, 0, 4, 6), (4, 1, 5, 7, 3), (5, 8, 4, 2),
-                     (6, 3, 7), (7, 6, 4, 8), (8, 7, 5)]
+old_new_locations = [(0, 1, 3,0,0), (1, 2, 4, 0,0), (2, 5, 1,0,0),
+                     (3, 0, 4, 6,0), (4, 1, 5, 7, 3), (5, 8, 4, 2,0),
+                     (6, 3, 7,0,0), (7, 6, 4, 8,0), (8, 7, 5,0,0)]
 old_new_locations1 = [(0, 1, 4), (1, 2, 5, 0), (2, 3,6, 1),(3,7,2),
                      (4, 0, 5, 8), (5, 1, 6, 9, 4), (6, 2, 7, 10,5),(7,11,6,3),
                      (8, 4, 9,12), (9, 5, 10, 13,8), (10, 6, 11,14,9),(11,15,10,7),
                      (12,8,13),(13,12,9,14),(14,13,10,15),(15,14,11)]
 
 dict_locations = {k: v for k, v in zip(big_rectangle_xy, old_new_locations)}
-
-
 # Location for old and new number to be used in dict locations
 
 
 # move number to empty position based on mouse click by user action
 def move_to_rectangle(**move_para):
-    global numbers_big_board_xy, background_color, board_array, space_area
+    global numbers_big_board_xy, background_color, board_array, space_area, rectangle_thickness_clear
 
     # Swap old number and put space in the old location
     board_array[move_para['board_new_location']] = board_array[move_para['board_old_location']]
     board_array[move_para['board_old_location']] = space_area
-    screen.fill(background_color)
 
-
+    # Draw black rectangle to hide the old number
+    draw_rect(rectangle_color=background_color,
+              rectangle_xy=move_para['mouse_pos_xy'],
+              rectangle_thickness_clear=rectangle_thickness_clear)
 # move number to empty position based on mouse click by user action
 
 
@@ -195,16 +203,20 @@ def big_rectangle_func(**rect_para):
     if click1[0] == 1:
         if board_array[rect_para['new_location_xy1']] == space_area:
             move_to_rectangle(board_old_location=rect_para['old_location_xy'],
-                              board_new_location=rect_para['new_location_xy1'])
+                              board_new_location=rect_para['new_location_xy1'],
+                              mouse_pos_xy=rect_para['mouse_pos_xy'])
         elif board_array[rect_para['new_location_xy2']] == space_area:
             move_to_rectangle(board_old_location=rect_para['old_location_xy'],
-                              board_new_location=rect_para['new_location_xy2'])
+                              board_new_location=rect_para['new_location_xy2'],
+                              mouse_pos_xy=rect_para['mouse_pos_xy'])
         elif board_array[rect_para['new_location_xy3']] == space_area:
             move_to_rectangle(board_old_location=rect_para['old_location_xy'],
-                              board_new_location=rect_para['new_location_xy3'])
+                              board_new_location=rect_para['new_location_xy3'],
+                              mouse_pos_xy=rect_para['mouse_pos_xy'])
         elif board_array[rect_para['new_location_xy4']] == space_area:
             move_to_rectangle(board_old_location=rect_para['old_location_xy'],
-                              board_new_location=rect_para['new_location_xy4'])
+                              board_new_location=rect_para['new_location_xy4'],
+                              mouse_pos_xy=rect_para['mouse_pos_xy'])
 
 
 # function to be called after mouse position matching in big_rectangle_dict
@@ -216,6 +228,7 @@ for num in range(number_rectangles):
     func_dict.append(big_rectangle_func)
 
 big_rectangle_dict = {k: v for k, v in zip(big_rectangle_xy, func_dict)}
+# function to be called after mouse position matching in big_rectangle_dict
 
 
 # Function to display exit msg when the user click quit or press ESC
@@ -312,15 +325,9 @@ def move_number(**move_param):
     global board_array, space_area, big_rectangle_dict, dict_locations
 
     rect_x1, rect_y1, rect_x2, rect_y2 = move_param['mouse_pos']
-    new_location_xy3, new_location_xy4 = 0, 0
 
-    if len(dict_locations[move_param['mouse_pos']]) == 3:
-        old_location_xy, new_location_xy1, new_location_xy2 = dict_locations[move_param['mouse_pos']]
-    elif len(dict_locations[move_param['mouse_pos']]) == 4:
-        old_location_xy, new_location_xy1, new_location_xy2, new_location_xy3 = dict_locations[move_param['mouse_pos']]
-    elif len(dict_locations[move_param['mouse_pos']]) == 5:
-        old_location_xy, new_location_xy1, new_location_xy2, new_location_xy3, new_location_xy4 = dict_locations[
-            move_param['mouse_pos']]
+    old_location_xy, new_location_xy1, \
+    new_location_xy2, new_location_xy3, new_location_xy4 = dict_locations[move_param['mouse_pos']]
 
     if rect_x2 + rect_x1 > cursor[0] > rect_x1 and rect_y2 + rect_y1 > cursor[1] > rect_y1:
         player_render1 = number_font.render(str(move_param['board_number']), True, background_color_board)
@@ -331,11 +338,10 @@ def move_number(**move_param):
                                                     new_location_xy1=new_location_xy1,
                                                     new_location_xy2=new_location_xy2,
                                                     new_location_xy3=new_location_xy3,
-                                                    new_location_xy4=new_location_xy4)
+                                                    new_location_xy4=new_location_xy4,
+                                                    mouse_pos_xy=move_param['mouse_pos'])
         # pygame.display.flip()
         # screen.fill(background_color)
-
-
 # Check which number clicked and call Move_to_rectangle to move it based on mouse click
 
 
@@ -345,11 +351,11 @@ def draw_rect(**rect):
     rect_x1, rect_y1, rect_x2, rect_y2 = rect['rectangle_xy']
 
     pygame.draw.rect(screen,
-                     rectangle_color,
+                     rect['rectangle_color'],
                      (rect_x1, rect_y1,
                       rect_x2,
                       rect_y2),
-                     rectangle_thickness)
+                     rect['rectangle_thickness_clear'])
 
 
 # Function to Draw rectangles as per the given parameters
@@ -378,7 +384,9 @@ while running:
     # List for game board numbers
     game_board_numbers = []
 
-    pygame.time.delay(100)
+    #global rectangle_thickness
+
+    #pygame.time.delay(100)
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -412,7 +420,7 @@ while running:
 
     # Display rectangles on the goal board
     for num in range(number_rectangles):
-        draw_rect(rectangle_xy=small_rectangle_xy[num])
+        draw_rect(rectangle_color=rectangle_color ,rectangle_xy=small_rectangle_xy[num], rectangle_thickness_clear=rectangle_thickness)
 
     # Numbers on the goal board
     for final in final_array:
@@ -424,7 +432,7 @@ while running:
 
     # Display big rectangles for the numbers grid
     for num in range(number_rectangles):
-        draw_rect(rectangle_xy=big_rectangle_xy[num])
+        draw_rect(rectangle_color=rectangle_color,rectangle_xy=big_rectangle_xy[num], rectangle_thickness_clear=rectangle_thickness)
 
     # Numbers on the big board
     for i, final in enumerate(board_array):
